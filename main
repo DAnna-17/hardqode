@@ -34,11 +34,12 @@ class statistics(Resource):
         for product in products:
             lessons = list(cur.execute(f'select id from lessons where product={product}'))
             data_lessons = dict.fromkeys(lessons)
+            count_users_p = len(set(cur.execute(f'select distinct id_user from accesses where id_product={product} ')))
             for lesson in lessons:
                 data_lessons[lesson] = cur.execute(f'select count(id_user), sum(viewing_time) from views where id_lesson={lesson}')
-                count_users = len(set(cur.execute(f'select distinct id_user from views where id_lesson={lesson} ')))
+                count_users_l = len(set(cur.execute(f'select distinct id_user from views where id_lesson={lesson} ')))
                 users = cur.execute('select count(id) from users')[0][0]
-                purchases = count_users / users * 100
-        data = {'lessons_info': data_lessons, 'count_users': count_users, 'purchases': purchases}
+                purchases = count_users_p / users * 100
+        data = {'lessons_info': data_lessons, 'count_users': count_users_l, 'purchases': purchases}
 
         return "Not found", 404
